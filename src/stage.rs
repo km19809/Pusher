@@ -118,6 +118,7 @@ impl Stage {
     /// * Stage widths are inconsistent
     /// * Stage width or height is 0
     /// * Balls are not an many as goals.
+    /// * The number of Player is less or more than 1
     pub fn new(string: &str) -> Result<Stage, &'static str> {
         let mut data = Vec::new();
         let mut width = 0;
@@ -125,6 +126,7 @@ impl Stage {
         let mut balls = 0;
         let mut total_goals = 0;
         let mut player_position = Vector2::new(0, 0);
+        let mut player_count = 0;
         for (y, line) in string.lines().enumerate() {
             let line_width = line.len();
             if y == 0 {
@@ -146,6 +148,7 @@ impl Stage {
                     }
                     PLAYER_CHR => {
                         player_position.set(x as i32, y as i32);
+                        player_count+=1;
                         data.push(Tile::Plain(ObjectType::Player))
                     }
                     '\n'|'\r'=>(),
@@ -159,6 +162,9 @@ impl Stage {
         }
         if balls != total_goals {
             return Err("Invalid Stage: Balls are not as many as goals.");
+        }
+        if player_count != 1{
+            return Err("Invalid Stage: Player has to be only one.");
         }
         Ok(Stage {
             width,
@@ -260,12 +266,12 @@ impl Stage {
     }
     /// Converts vector2 to 1d index.
     /// # Errors
-    /// It returns `Err(String)` when  x is bigger or equal than width of stage, or y is bigger or equal than height of stage
-    /// # Panics
-    /// It panics when either x or y is incompatible with usize.  
+    /// It returns `Err(String)` when:
+    /// * x is bigger or equal than width of stage, or y is bigger or equal than height of stage
+    /// * either x or y is incompatible with usize.  
     fn vector2_as_index(&self, v: Vector2) -> Result<usize, String> {
-        let x: usize = v.get_x().try_into().unwrap();
-        let y: usize = v.get_y().try_into().unwrap();
+        let x: usize = v.get_x().try_into().map_err(|_err| String::from("x cannot be converted to usize."))?;
+        let y: usize = v.get_y().try_into().map_err(|_err| String::from("y cannot be converted to usize."))?;
         if x < self.width && y < self.height {
             return Ok(x + y * self.width);
         } else {

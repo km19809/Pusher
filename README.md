@@ -34,6 +34,8 @@ Width and height of stage cannot be 0.
 Shape of stage must be rectangle.
 3. 공의 수와 목표의 수는 같아야 합니다.\
 The number of balls must always same as the number of goals.
+4. 플레이어 수는 오직 하나여야 합니다.\
+The number of player must be only one.
 ### 예시 Example
 ```
 ########
