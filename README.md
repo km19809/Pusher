@@ -4,14 +4,25 @@ Rust로 작성한 CLI 소코반\
 ## 사용 방법 Usage
 `pusher <STAGE_FILENAME>` \
 **명령줄 인수 Arguments**:
+> 기본 default
 * STAGE_FILENAME: \
 Path to Stage file. \
 *default*: "stage.data"
+> Features only: argparser 
+* --default-stage:\
+Shows default stage.\
+`pusher --default-stage > stage.data`
+* --help:\
+Shows help message.\
+`pusher --help`
 ## 조작 방법 How to Play
+>빌드시 features=tui를 사용하지 않은 경우,\
 >명령어를 입력하려면 반드시 엔터를 쳐야합니다.\
->Must press 'Enter/Return' to input.
-* <kbd>WASD</kbd>: 이동 Move
-* <kbd>Q</kbd>: 끝내기 Quit
+>Must press 'Enter/Return' to input without 'tui' features. 
+* <kbd>W</kbd><kbd>A</kbd><kbd>S</kbd><kbd>D</kbd>
+/
+<kbd>H</kbd><kbd>J</kbd><kbd>K</kbd><kbd>L</kbd>(vi style): 이동 Move
+* <kbd>Q</kbd>/<kbd>Esc</kbd>(TUI Only): 끝내기 Quit
 ## 스테이지 형식 Stage Format
 ### 타일 Tile
  * `#`:벽  Wall
@@ -43,15 +54,19 @@ The number of player must be only one.
 ########
 ```
 stage.data
-### 빌드 방법 How to bulid
-실행파일 Binary:
+## 빌드 방법 How to bulid
+### 실행파일 Binary:
 ```sh
 cargo build # without argument parser
 cargo build --features tui # same as above with terminal ui
 cargo build --bin cli --features argparser # with argument parser
-cargo build --bin cli --features argparser tui # same as above with terminal ui
+cargo build --bin cli --features argparser,tui # same as above with terminal ui
 ```
-문서 Docs:
+**Features**
+* argparser: 명령줄 인수 파서와 몇몇 명령줄 인수를 추가합니다.\
+Add argument parser and optional arguments.
+* tui: Terminal UI with [crossterm](https://github.com/crossterm-rs/crossterm)
+### 문서 Docs:
 ```sh
 cargo doc --open
 ``` 
