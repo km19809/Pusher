@@ -6,30 +6,17 @@ pub mod stage;
 pub mod vector2;
 
 /// Struct for contain parsed arguments.
-struct Arguments {
-    /// Name of this binary
-    binary_name: String,
+pub struct Arguments {
     /// File name of stage data
-    filename: String,
-}
-
-/// Parses CLI arguments into struct Arguments
-fn parse_args(mut args: std::env::Args) -> Arguments {
-    let binary_name = args.next().unwrap_or(String::from("pusher"));
-    let filename = args.next().unwrap_or(String::from("stage.data"));
-    Arguments {
-        binary_name,
-        filename,
-    }
+    pub filename: String,
 }
 
 /// Runs the game. It loads stage and interpret command.
-pub fn run(args: std::env::Args) -> Result<(), Box<dyn error::Error>> {
+pub fn run(args: Arguments) -> Result<(), Box<dyn error::Error>> {
     //load
-    let args = parse_args(args);
     let fnf_msg = format!(
-        "File {} not found.\nUsage: {} <STAGE_FILE>\nArgs:\n STAGE_FILE   default='stage.data'",
-        args.filename, args.binary_name
+        "File {} not found.\n",
+        args.filename
     );
     let mut f = File::open(args.filename).map_err(|err| {
         if matches!(err.kind(), io::ErrorKind::NotFound) {

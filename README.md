@@ -2,18 +2,16 @@
 Rust로 작성한 CLI 소코반\
 [IJEMIN/Pusher](https://github.com/IJEMIN/Pusher)에서 영감받았습니다.
 ## 사용 방법 Usage
----
 `pusher <STAGE_FILENAME>` \
 **명령줄 인수 Arguments**:
 * STAGE_FILENAME: \
 Path to Stage file. \
 *default*: "stage.data"
 ## 조작 방법 How to Play
----
 >명령어를 입력하려면 반드시 엔터를 쳐야합니다.\
 >Must press 'Enter/Return' to input.
-* `WASD`: 이동 Move
-* `Q`: 끝내기 Quit
+* <kbd>WASD</kbd>: 이동 Move
+* <kbd>Q</kbd>: 끝내기 Quit
 ## 스테이지 형식 Stage Format
 ### 타일 Tile
  * `#`:벽  Wall
@@ -47,11 +45,14 @@ The number of player must be only one.
 stage.data
 ### 빌드 방법 How to bulid
 실행파일 Binary:
-```
-cargo build
+```sh
+cargo build # without argument parser
+cargo build --features tui # same as above with terminal ui
+cargo build --bin cli --features argparser # with argument parser
+cargo build --bin cli --features argparser tui # same as above with terminal ui
 ```
 문서 Docs:
-```
+```sh
 cargo doc --open
 ``` 
 ## LICENSE

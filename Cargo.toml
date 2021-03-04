@@ -1,11 +1,23 @@
 [package]
 name = "pusher"
-version = "0.1.0"
-authors = ["km19809"]
+version = "0.2.0"
+authors = ["km19809 <km19809@users.noreply.github.com>"]
 edition = "2018"
 license = "MIT"
 readme = "README.md"
+default-run = "pusher"
 
 # See more keys and their definitions at https://doc.rust-lang.org/cargo/reference/manifest.html
 
+[features]
+tui = ["crossterm"]
+argparser = ["clap"]
+
 [dependencies]
+crossterm = {version="~0.18", optional=true}
+clap = {version="~2.33", optional=true}
+
+[[bin]]
+name = "cli"
+required-features = ["argparser"]
+path = "src/cli/main.rs"
