@@ -12,12 +12,8 @@ default-run = "pusher"
 [features]
 tui = ["crossterm"]
 argparser = ["clap"]
+color = []
 
 [dependencies]
 crossterm = {version="~0.18", optional=true}
 clap = {version="~2.33", optional=true}
-
-[[bin]]
-name = "cli"
-required-features = ["argparser"]
-path = "src/cli/main.rs"

@@ -59,13 +59,14 @@ stage.data
 ```sh
 cargo build # without argument parser
 cargo build --features tui # same as above with terminal ui
-cargo build --bin cli --features argparser # with argument parser
-cargo build --bin cli --features argparser,tui # same as above with terminal ui
+cargo build --features argparser,color # with argument parser and color
+cargo build --features argparser,tui,color # with all features
 ```
 **Features**
 * argparser: 명령줄 인수 파서와 몇몇 명령줄 인수를 추가합니다.\
 Add argument parser and optional arguments.
 * tui: Terminal UI with [crossterm](https://github.com/crossterm-rs/crossterm)
+* color: ANSI 색상을 활용합니다. Use 16 ANSI Color
 ### 문서 Docs:
 ```sh
 cargo doc --open

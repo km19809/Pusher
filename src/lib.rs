@@ -141,18 +141,26 @@ pub fn run(args: Arguments) -> Result<(), Box<dyn error::Error>> {
             Ok(true) => (),
             Ok(false) => break,
             Err(msg) => {
-                message = format!("Error: {}", msg);
+                message = if cfg!(feature = "color") {
+                    format!("\x1b[0;31mError: {}\x1b[0m\n", msg)
+                } else {
+                    format!("Error: {}", msg)
+                };
             }
         };
         if s.is_won() {
-            message = String::from("You Won!\n");
+            message = if cfg!(feature = "color") {
+                String::from("\x1b[0;33mYou Won!\x1b[0m\n")
+            } else {
+                String::from("You Won!\n")
+            };
             render(&mut s, &message);
             break;
         }
     }
     #[cfg(feature = "tui")]
     {
-        execute!(io::stdout(), Print("Press any key to quit.\n")).unwrap();
+        execute!(io::stdout(), Print("\n[Press any key to quit].\n")).unwrap();
         read().unwrap(); //Wait for input.
         execute!(io::stdout(), LeaveAlternateScreen)
             .map_err(|_err| "Cannot return to original screen.")?;

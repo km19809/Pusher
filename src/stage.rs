@@ -29,6 +29,7 @@ pub enum ObjectType {
 }
 
 impl fmt::Display for ObjectType {
+    #[cfg(not(feature = "color"))]
     fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
         let charactor = match self {
             ObjectType::Empty => EMPTY_CHR,
@@ -36,6 +37,15 @@ impl fmt::Display for ObjectType {
             ObjectType::Player => PLAYER_CHR,
         };
         write!(f, "{}", charactor)
+    }
+    #[cfg(feature = "color")]
+    fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
+        let styled_charactor = match self {
+            ObjectType::Empty => ("\x1b[1;30m", EMPTY_CHR),
+            ObjectType::Ball => ("\x1b[0;37m", BALL_CHR),
+            ObjectType::Player => ("\x1b[0;32m", PLAYER_CHR),
+        };
+        write!(f, "{}{}", styled_charactor.0, styled_charactor.1)
     }
 }
 /// Describes type of Tile: Wall, Plain, Goal\
@@ -48,12 +58,23 @@ pub enum Tile {
 }
 
 impl fmt::Display for Tile {
+    #[cfg(not(feature = "color"))]
     fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
         match self {
             Tile::Wall => write!(f, "{}", WALL_CHR),
             Tile::Plain(obj) => write!(f, "{}", obj),
             Tile::Goal(ObjectType::Empty) => write!(f, "{}", GOAL_CHR),
             Tile::Goal(ObjectType::Ball) => write!(f, "{}", BALL_ON_GOAL_CHR),
+            Tile::Goal(obj) => write!(f, "{}", obj),
+        }
+    }
+    #[cfg(feature = "color")]
+    fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
+        match self {
+            Tile::Wall => write!(f, "\x1b[1;31m{}", WALL_CHR),
+            Tile::Plain(obj) => write!(f, "{}", obj),
+            Tile::Goal(ObjectType::Empty) => write!(f, "\x1b[0;33m{}", GOAL_CHR),
+            Tile::Goal(ObjectType::Ball) => write!(f, "\x1b[0;33m{}", BALL_ON_GOAL_CHR),
             Tile::Goal(obj) => write!(f, "{}", obj),
         }
     }
@@ -294,6 +315,7 @@ impl Stage {
 }
 
 impl fmt::Display for Stage {
+    #[cfg(not(feature = "color"))]
     fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
         for line in (&self.data).chunks(self.width) {
             for c in line {
@@ -304,6 +326,20 @@ impl fmt::Display for Stage {
         writeln!(
             f,
             "Matched goal(s): {}/{}",
+            self.matched_goals, self.total_goals
+        )
+    }
+    #[cfg(feature = "color")]
+    fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
+        for line in (&self.data).chunks(self.width) {
+            for c in line {
+                write!(f, "{}", c)?;
+            }
+            write!(f, "\n")?;
+        }
+        writeln!(
+            f,
+            "\x1b[0mMatched goal(s): {}/{}",
             self.matched_goals, self.total_goals
         )
     }
