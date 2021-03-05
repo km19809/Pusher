@@ -323,9 +323,9 @@ impl fmt::Display for Stage {
             }
             write!(f, "\r\n")?;
         }
-        writeln!(
+        write!(
             f,
-            "Matched goal(s): {}/{}",
+            "Matched goal(s): {}/{}\r\n",
             self.matched_goals, self.total_goals
         )
     }
@@ -337,9 +337,9 @@ impl fmt::Display for Stage {
             }
             write!(f, "\r\n")?;
         }
-        writeln!(
+        write!(
             f,
-            "\x1b[0mMatched goal(s): {}/{}",
+            "\x1b[0mMatched goal(s): {}/{}\r\n",
             self.matched_goals, self.total_goals
         )
     }
