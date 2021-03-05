@@ -6,7 +6,10 @@ use crossterm::{
     event::{read, Event, KeyCode},
     execute,
     style::Print,
-    terminal::{Clear, ClearType, EnterAlternateScreen, LeaveAlternateScreen, SetTitle},
+    terminal::{
+        disable_raw_mode, enable_raw_mode, Clear, ClearType, EnterAlternateScreen,
+        LeaveAlternateScreen, SetTitle,
+    },
 };
 use std::error;
 use std::fs::File;
@@ -78,23 +81,26 @@ fn update(s: &mut Stage) -> Result<bool, &'static str> {
 }
 
 /// Render Stage `s` and additional message `msg`.
-/// # Panics
-/// (TUI) It panics when `crossterm::excute` failed.
-fn render(s: &mut Stage, msg: &str) {
-    let stage_string = format!("{}WASD to move, Q to quit.\n{}", s, msg);
+/// # Errors
+/// (TUI) It return `Err` when rendering failed.
+fn render(s: &mut Stage, msg: &str) -> Result<(), &'static str> {
+    let stage_string = format!("{}WASD to move, Q to quit.\r\n{}", s, msg);
     #[cfg(not(feature = "tui"))]
     {
         println!("{}", stage_string);
+        Ok(())
     }
     #[cfg(feature = "tui")]
     {
-        execute!(
+        match execute!(
             io::stdout(),
             Clear(ClearType::All),
             MoveTo(0, 0),
             Print(stage_string)
-        )
-        .unwrap();
+        ) {
+            Ok(_) => Ok(()),
+            Err(_) => Err("Failed to render stage."),
+        }
     }
 }
 
@@ -108,7 +114,7 @@ fn render(s: &mut Stage, msg: &str) {
 /// It panics when `crossterm::excute` failed.
 pub fn run(args: Arguments) -> Result<(), Box<dyn error::Error>> {
     //load
-    let fnf_msg = format!("File {} not found.\n", args.filename);
+    let fnf_msg = format!("File {} not found.\r\n", args.filename);
     let mut f = File::open(args.filename).map_err(|err| {
         if matches!(err.kind(), io::ErrorKind::NotFound) {
             io::Error::new(io::ErrorKind::NotFound, fnf_msg)
@@ -129,20 +135,21 @@ pub fn run(args: Arguments) -> Result<(), Box<dyn error::Error>> {
             SetTitle("Pusher")
         )
         .map_err(|_err| "Cannot switch screen.")?;
+        enable_raw_mode().map_err(|_err| "Cannot enable raw mode.")?;
     }
     //setup stage
     let mut s = stage::Stage::new(&contents)?;
     let mut message = String::new();
     //update
     loop {
-        render(&mut s, &message);
+        render(&mut s, &message)?;
         message.clear();
         match update(&mut s) {
             Ok(true) => (),
             Ok(false) => break,
             Err(msg) => {
                 message = if cfg!(feature = "color") {
-                    format!("\x1b[0;31mError: {}\x1b[0m\n", msg)
+                    format!("\x1b[0;31mError: {}\x1b[0m\r\n", msg)
                 } else {
                     format!("Error: {}", msg)
                 };
@@ -150,18 +157,20 @@ pub fn run(args: Arguments) -> Result<(), Box<dyn error::Error>> {
         };
         if s.is_won() {
             message = if cfg!(feature = "color") {
-                String::from("\x1b[0;33mYou Won!\x1b[0m\n")
+                String::from("\x1b[0;33mYou Won!\x1b[0m\r\n")
             } else {
-                String::from("You Won!\n")
+                String::from("You Won!\r\n")
             };
-            render(&mut s, &message);
+            render(&mut s, &message)?;
             break;
         }
     }
     #[cfg(feature = "tui")]
     {
-        execute!(io::stdout(), Print("\n[Press any key to quit].\n")).unwrap();
-        read().unwrap(); //Wait for input.
+        execute!(io::stdout(), Print("\r\n[Press any key to quit].\r\n"))
+            .map_err(|_err| "Failed to Print.")?;
+        read().map_err(|_err| "Cannot read event.")?; //Wait for input.
+        disable_raw_mode().map_err(|_err| "Cannot disable raw mode.")?;
         execute!(io::stdout(), LeaveAlternateScreen)
             .map_err(|_err| "Cannot return to original screen.")?;
     }

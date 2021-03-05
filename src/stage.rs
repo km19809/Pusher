@@ -321,7 +321,7 @@ impl fmt::Display for Stage {
             for c in line {
                 write!(f, "{}", c)?;
             }
-            write!(f, "\n")?;
+            write!(f, "\r\n")?;
         }
         writeln!(
             f,
@@ -335,7 +335,7 @@ impl fmt::Display for Stage {
             for c in line {
                 write!(f, "{}", c)?;
             }
-            write!(f, "\n")?;
+            write!(f, "\r\n")?;
         }
         writeln!(
             f,
