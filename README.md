@@ -67,6 +67,24 @@ cargo build --features argparser,tui,color # with all features
 Add argument parser and optional arguments.
 * tui: Terminal UI with [crossterm](https://github.com/crossterm-rs/crossterm)
 * color: ANSI 색상을 활용합니다. Use 16 ANSI Color
+### Docker
+#### Build ####
+```sh
+docker build -t pusher:<tag>  . # Set a arbitrary tag such as: latest
+# or
+docker build -t pusher:<tag> -f dockerfiles/<dockerfile> .
+```
+**List of dockerfiles**
+* `Dockerfile` Builds TUI enabled color pusher image (~20MB)
+* `minimal.dockerfile` Builds minimal color pusher image (~4MB)
+* `minimal_tui.dockerfile` Builds TUI enabled minimal color pusher image (~4MB)
+#### Run ####
+```sh
+docker run pusher:<tag>
+# Play custom stage in current dirrectory(pwd)
+docker run --rm -it -v $(pwd):/stage  pusher:0.1 /pusher stage/<stage filename>
+```
+
 ### 문서 Docs:
 ```sh
 cargo doc --open
