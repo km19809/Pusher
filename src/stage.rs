@@ -182,7 +182,7 @@ impl Stage {
             }
             height = y + 1;
         }
-        if width <= 0 || height <= 0 {
+        if width == 0 || height == 0 {
             return Err("Invalid Stage: Width or height is smaller than 1.");
         }
         if balls != total_goals {
@@ -304,7 +304,7 @@ impl Stage {
             .try_into()
             .map_err(|_err| String::from("y cannot be converted to usize."))?;
         if x < self.width && y < self.height {
-            return Ok(x + y * self.width);
+            Ok(x + y * self.width)
         } else {
             Err(format!(
                 "Index out of range! got Vector 2 {} while w:h={}:{}.",
@@ -351,7 +351,7 @@ impl ops::Index<Vector2> for Stage {
     fn index(&self, point: Vector2) -> &Self::Output {
         match self.vector2_as_index(point) {
             Ok(index) => &self.data[index],
-            Err(msg) => panic!(msg),
+            Err(msg) => panic!("{}",msg),
         }
     }
 }
@@ -360,7 +360,7 @@ impl ops::IndexMut<Vector2> for Stage {
     fn index_mut(&mut self, point: Vector2) -> &mut Tile {
         match self.vector2_as_index(point) {
             Ok(index) => &mut self.data[index],
-            Err(msg) => panic!(msg),
+            Err(msg) => panic!("{}",msg),
         }
     }
 }

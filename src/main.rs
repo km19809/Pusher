@@ -6,7 +6,7 @@ use std::process;
 /// Parses CLI arguments into struct Arguments
 #[cfg(not(feature = "argparser"))]
 fn parse_args(mut args: std::env::Args) -> pusher::Arguments {
-    let filename = args.next().unwrap_or(String::from("stage.data"));
+    let filename = args.next().unwrap_or_else(|| String::from("stage.data"));
     pusher::Arguments { filename }
 }
 
@@ -14,7 +14,7 @@ fn main() {
     #[cfg(not(feature = "argparser"))]
     {
         let mut args = std::env::args();
-        let binary_name = args.next().unwrap_or(String::from("pusher"));
+        let binary_name = args.next().unwrap_or_else(|| String::from("pusher"));
 
         if let Err(e) = pusher::run(parse_args(args)) {
             eprintln!("Application error: {}", e);
